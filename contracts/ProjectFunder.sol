@@ -57,7 +57,23 @@ contract ProjectFunder {
         }
     }
 
-    //function getContributors(){}
+    // Recogemos las address de los contribuyentes y la cantidad contribuida utilizando el mapping
+    function getContributors(uint _id) view public returns(address[] memory, uint[] memory){
+        return(projects[_id].contributors, projects[_id].contributions);
+    }
 
-    //function getProject() {}
+    function getProjects() public view returns (Project[] memory) {
+        Project[] memory allProjects = new Project[](numberOfProjects);
+        /*Creamos una nueva variable llamada "allProjects" que es un tipo de Array de multiples "struct Project" pero no recogemos
+         estos "struct project", sino que creamos un Array vació con tantos elementos vacíos como proyectos existen: ej. [{}, {}, {}]*/
+
+        //Llenamos este Array creado con los proyectos
+        for (uint i = 0; i < numberOfProjects; i++){
+        Project storage item = projects[i];
+
+        allProjects[i] = item;
+        }
+
+        return allProjects;
+    }
 }
