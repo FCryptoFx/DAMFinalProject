@@ -8,22 +8,22 @@ contract ProjectFunder {
         address owner; 
         string title;
         string description;
-        uint256 target;
-        uint256 deadline;
-        uint256 amountCollected;
+        uint target;
+        uint deadline;
+        uint amountCollected;
         string image;
-        address[] donators;
-        uint256[] donations;
+        address[] contributors;
+        uint[] contributions;
     }
 
-    mapping(uint256 => Project) public projects;
+    mapping(uint => Project) public projects;
 
-    uint256 public numberOfProjects = 0;
+    uint public numberOfProjects = 0;
 
-    function createProject(address _owner, string memory _title, string memory _description, uint256 _target, uint256 _deadline, 
-    string memory _image ) public returns (uint256){
+    function createProject(address _owner, string memory _title, string memory _description, uint _target, uint _deadline, 
+    string memory _image ) public returns (uint){
 
-        Project storage project = projects[numberOfProjects];
+        Project storage project = projects[numberOfProjects]; //"storage" indica que la variable "project" se almacenará en la memoria de almacenamiento permanente en la blockchain.
 
         /*Comprobación de que la fecha limite elegid es posterior al momento actual.
         block.timestamp hace referencia al tiempo en ese momento, por lo tanto si el project.deadline 
@@ -42,9 +42,22 @@ contract ProjectFunder {
         return numberOfProjects -1; //Si todo funciona bien, devolvemos el número de proyectos -1 que serà el índice del projecto mas reciente
     }
 
-    //function donateToProject() {}
+    function contributeToProject(uint _id) public payable {
+        uint amount = msg.value;
+        
+        Project storage project = projects[_id];
 
-    //function getDonator(){}
+        project.contributors.push(msg.sender); //Insertamos en el Array la address del contribuyente
+        project.contributions.push(amount); //Insertamos en el Array la cantidad
+        
+        (bool sent,) = payable(project.owner).call{value: amount}(""); //Transferimos la cantidad al contrato "project.owner" y verificamos si se ha realizado correctamente
+
+        if(sent){
+            project.amountCollected = project.amountCollected + amount;
+        }
+    }
+
+    //function getContributors(){}
 
     //function getProject() {}
 }
